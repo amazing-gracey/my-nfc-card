@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KIM YE LEE - Digital Business Card</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel (JSX 컴파일용) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Framer Motion (애니메이션) -->
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { motion } = window.Motion;
+
+    // --- 인라인 SVG 아이콘 컴포넌트 ---
+    const ImageIcon = ({ size = 20, strokeWidth = 2.5 }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+    );
+    const Phone = ({ size = 20, strokeWidth = 2.5 }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    );
+    const Share2 = ({ size = 20, strokeWidth = 2.5 }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+    );
+    const SiInstagram = ({ size = 22 }) => (
+      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" height={size} width={size} xmlns="http://www.w3.org/2000/svg"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+    );
+    const SiYoutube = ({ size = 22 }) => (
+      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 576 512" height={size} width={size} xmlns="http://www.w3.org/2000/svg"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"></path></svg>
+    );
+    const SiTiktok = ({ size = 22 }) => (
+      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" height={size} width={size} xmlns="http://www.w3.org/2000/svg"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"></path></svg>
+    );
+    const SiSpotify = ({ size = 22 }) => (
+      <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 496 512" height={size} width={size} xmlns="http://www.w3.org/2000/svg"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm100.7 364.9c-4.2 0-6.8-1.3-10.7-3.6-62.4-37.6-135-39.2-206.7-24.5-3.9 1-9 2.6-11.9 2.6-9.7 0-15.8-7.7-15.8-15.8 0-10.3 6.1-15.2 13.6-16.8 81.9-18.1 165.6-16.5 237 26.2 6.1 3.9 9.7 7.4 9.7 16.5s-7.1 15.4-15.2 15.4zm26.9-65.6c-5.2 0-8.7-2.3-12.3-4.2-82.5-54.8-192.8-79.5-276-46-5.8 2.3-11.6 3.9-16.2 3.9-11.3 0-19.4-9.4-19.4-19.4 0-11.3 7.1-17.1 15.5-20.4 93.1-38.1 214.5-12.3 306.6 48.8 5.8 3.9 10 8.1 10 18.1 0 11.6-8.7 19.2-18.2 19.2zm32.7-75.9c-6.1 0-10.3-2.6-15.2-5.5-98.2-57.5-238.5-79.5-331.3-46-6.8 2.3-12.6 4.5-18.1 4.5-14.2 0-24.2-11.6-24.2-24.2 0-13.6 8.4-20.4 17.5-23.6 106.3-39.5 261.7-14.2 373.2 51.2 6.8 3.9 12.3 8.7 12.3 20.4 0 13.5-10.6 23.2-24.2 23.2z"></path></svg>
+    );
+
+    function App() {
+      const userInfo = {
+        nameEn: "KIM YE LEE",
+        nameKo: "김예리",
+        phone: "010 9077 3635",
+        email: "dpfmfl@naver.com",
+        instagramUrl: "https://www.instagram.com/amazing___gracey/?__pwa=1#",
+        youtubeUrl: "https://www.youtube.com/@Jazzy_GRACEY",
+        tiktokUrl: "https://www.tiktok.com/@jazzy_gracey?_r=1&_t=ZS-93scTfoBaZW",
+        spotifyUrl: "https://open.spotify.com/artist/5KMVJlL8CYAlEQ2yp2cdYA?si=akcp5fz_S0OHlcNqWFf6cA"
+      };
+
+      const frontImageUrl = "https://i.postimg.cc/bwsRKCwV/front.png";
+      const backImageUrl = "https://i.postimg.cc/HkVtfZkP/back.png";
+
+      const handleSaveContact = () => {
+        const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${userInfo.nameEn}\nN:;${userInfo.nameEn};;;\nNICKNAME:${userInfo.nameKo}\nTEL;TYPE=CELL:${userInfo.phone.replace(/\s+/g, '-')}\nEMAIL:${userInfo.email}\nURL;type=Instagram:${userInfo.instagramUrl}\nURL;type=YouTube:${userInfo.youtubeUrl}\nURL;type=TikTok:${userInfo.tiktokUrl}\nURL;type=Spotify:${userInfo.spotifyUrl}\nEND:VCARD`;
+
+        const blob = new Blob([vcard], { type: "text/vcard" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${userInfo.nameEn.replace(/\s+/g, '_')}_Contact.vcf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      const handleSaveImages = () => {
+        const images = [
+          { url: frontImageUrl, name: 'Amazing_Gracey_Card_Front.png' },
+          { url: backImageUrl, name: 'Amazing_Gracey_Card_Back.png' }
+        ];
+
+        images.forEach((img, index) => {
+          setTimeout(async () => {
+            try {
+              const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(img.url)}`;
+              const response = await fetch(proxyUrl);
+              
+              if (!response.ok) throw new Error("Network response was not ok");
+              
+              const blob = await response.blob();
+              const blobUrl = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = img.name;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+              console.error('Error downloading image:', error);
+              // Fallback
+              const link = document.createElement('a');
+              link.href = img.url;
+              link.download = img.name;
+              link.target = '_blank';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+          }, index * 500);
+        });
+      };
+
+      const handleShare = async () => {
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: `${userInfo.nameEn} - Digital Business Card`,
+              text: `Check out ${userInfo.nameEn}'s digital business card!`,
+              url: window.location.href,
+            });
+          } catch (error) {
+            console.error('Error sharing:', error);
+          }
+        } else {
+          alert("Sharing is not supported on this browser.");
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-[#f8f9fa] flex flex-col items-center py-12 px-6 font-sans overflow-x-hidden">
+          
+          {/* Header / Intro */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-2xl font-black tracking-widest text-[#0626A4]">{userInfo.nameEn}</h1>
+            <p className="text-[#0626A4]/80 font-medium tracking-widest mt-1 text-sm">DIGITAL BUSINESS CARD</p>
+          </motion.div>
+
+          {/* Cards Container */}
+          <div className="flex flex-col gap-8 w-full max-w-[340px]">
+            
+            {/* Front Card (Subtle Sway) */}
+            <motion.div
+              initial={{ x: -200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
+              className="w-full aspect-[1/1.65] relative"
+            >
+              <motion.div
+                animate={{ 
+                  rotate: [-1.5, 1.5, -1.5],
+                  y: [-4, 4, -4]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 4,
+                  ease: "easeInOut" 
+                }}
+                className="w-full h-full rounded-[32px] shadow-2xl overflow-hidden bg-white"
+              >
+                <img 
+                  src={frontImageUrl} 
+                  alt="Business Card Front" 
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Back Card (Static) */}
+            <motion.div
+              initial={{ x: 200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+              className="w-full aspect-[1/1.65] rounded-[32px] shadow-2xl overflow-hidden bg-white relative"
+            >
+              <img 
+                src={backImageUrl} 
+                alt="Business Card Back" 
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+
+          </div>
+
+          {/* Action Buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-12 flex flex-col items-center gap-4 w-full max-w-[340px]"
+          >
+            <button 
+              onClick={handleSaveImages}
+              className="w-full bg-[#0626A4] text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black tracking-widest text-sm shadow-lg hover:bg-[#051d82] transition-colors active:scale-95 cursor-pointer"
+            >
+              <ImageIcon size={20} strokeWidth={2.5} />
+              SAVE IMAGES
+            </button>
+
+            <button 
+              onClick={handleSaveContact}
+              className="w-full bg-[#FFA6C9] text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black tracking-widest text-sm shadow-lg hover:bg-[#ff91bb] transition-colors active:scale-95 cursor-pointer"
+            >
+              <Phone size={20} strokeWidth={2.5} />
+              SAVE PHONE NUMBER
+            </button>
+            
+            <button 
+              onClick={handleShare}
+              className="w-full bg-white text-[#0626A4] border-2 border-[#0626A4]/20 py-4 rounded-2xl flex items-center justify-center gap-2 font-black tracking-widest text-sm shadow-sm hover:bg-blue-50 transition-colors active:scale-95 cursor-pointer"
+            >
+              <Share2 size={20} strokeWidth={2.5} />
+              SHARE CARD
+            </button>
+          </motion.div>
+
+          {/* Social Links */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-10 flex items-center justify-center gap-5 flex-wrap max-w-[340px]"
+          >
+            <a href={userInfo.instagramUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
+              <SiInstagram size={22} />
+            </a>
+            <a href={userInfo.youtubeUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
+              <SiYoutube size={22} />
+            </a>
