@@ -112,7 +112,6 @@
               URL.revokeObjectURL(blobUrl);
             } catch (error) {
               console.error('Error downloading image:', error);
-              // Fallback
               const link = document.createElement('a');
               link.href = img.url;
               link.download = img.name;
@@ -237,7 +236,7 @@
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="mt-10 flex items-center justify-center gap-5 flex-wrap max-w-[340px]"
+            className="mt-10 flex items-center justify-center gap-5 flex-wrap max-w-[340px] pb-12"
           >
             <a href={userInfo.instagramUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
               <SiInstagram size={22} />
@@ -245,3 +244,20 @@
             <a href={userInfo.youtubeUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
               <SiYoutube size={22} />
             </a>
+            <a href={userInfo.tiktokUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
+              <SiTiktok size={22} />
+            </a>
+            <a href={userInfo.spotifyUrl} target="_blank" rel="noreferrer" className="p-3.5 rounded-full bg-white shadow-md hover:shadow-lg transition-all text-[#0626A4] hover:-translate-y-1">
+              <SiSpotify size={22} />
+            </a>
+          </motion.div>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
